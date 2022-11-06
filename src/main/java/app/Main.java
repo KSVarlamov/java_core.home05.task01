@@ -23,12 +23,16 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+        // Task01 demo
         String[] columnMapping = {"id", "firstName", "lastName", "country", "age"};
         List<Employee> lostFromCSV = parseCSV(columnMapping, "data.csv");
         saveStringToFile(listToJson(lostFromCSV), "data-from-csv.json");
 
+        // Task02 demo
         List<Employee> listFromXML = parseXML("data.xml");
         saveStringToFile(listToJson(listFromXML), "data-from-xml.json");
+
+        // Task03 demo
     }
 
     private static void saveStringToFile(String json, String fileName) {
