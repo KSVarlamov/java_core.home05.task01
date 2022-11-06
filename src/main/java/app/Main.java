@@ -7,8 +7,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,13 +42,14 @@ public class Main {
 
     private static List<Employee> jsonToList(String json) {
         Gson gson = new GsonBuilder().create();
-        Type listType = new TypeToken<List<Employee>>() {}.getType();
+        Type listType = new TypeToken<List<Employee>>() {
+        }.getType();
         return gson.fromJson(json, listType);
     }
 
     private static String readString(String s) {
         String result = "";
-        try (BufferedReader reader = new BufferedReader(new FileReader(new File(s)))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(s))) {
             result = reader.lines().collect(Collectors.joining("\n"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,13 +95,14 @@ public class Main {
 
 
     private static String listToJson(List<Employee> list) {
-        Type listType = new TypeToken<List<Employee>>() {}.getType();
+        Type listType = new TypeToken<List<Employee>>() {
+        }.getType();
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(list, listType);
     }
 
     private static List<Employee> parseCSV(String[] columnMapping, String fileName) {
-        try (CSVReader csvReader = new CSVReader(new FileReader(new File(fileName)))) {
+        try (CSVReader csvReader = new CSVReader(new FileReader(fileName))) {
             ColumnPositionMappingStrategy strategy = new ColumnPositionMappingStrategy<>();
             strategy.setType(Employee.class);
             strategy.setColumnMapping(columnMapping);
