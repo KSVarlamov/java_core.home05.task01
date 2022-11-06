@@ -7,6 +7,8 @@ import com.opencsv.CSVReader;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -14,12 +16,14 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -33,6 +37,25 @@ public class Main {
         saveStringToFile(listToJson(listFromXML), "data-from-xml.json");
 
         // Task03 demo
+        String json = readString("data-from-csv.json");
+        List<Employee> listFromJSON = jsonToList(json);
+        listFromJSON.forEach(System.out::println);
+    }
+
+    private static List<Employee> jsonToList(String json) {
+        Gson gson = new GsonBuilder().create();
+        Type listType = new TypeToken<List<Employee>>() {}.getType();
+        return gson.fromJson(json, listType);
+    }
+
+    private static String readString(String s) {
+        String result = "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File(s)))) {
+            result = reader.lines().collect(Collectors.joining("\n"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     private static void saveStringToFile(String json, String fileName) {
@@ -55,14 +78,14 @@ public class Main {
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
                 if (Node.ELEMENT_NODE == node.getNodeType()) {
-                   Element employee = (Element) node;
-                   Employee empl = new Employee(
-                           Long.parseLong(employee.getElementsByTagName("id").item(0).getTextContent()),
-                           employee.getElementsByTagName("firstName").item(0).getTextContent(),
-                           employee.getElementsByTagName("lastName").item(0).getTextContent(),
-                           employee.getElementsByTagName("country").item(0).getTextContent(),
-                           Integer.parseInt(employee.getElementsByTagName("age").item(0).getTextContent()));
-                   result.add(empl);
+                    Element employee = (Element) node;
+                    Employee empl = new Employee(
+                            Long.parseLong(employee.getElementsByTagName("id").item(0).getTextContent()),
+                            employee.getElementsByTagName("firstName").item(0).getTextContent(),
+                            employee.getElementsByTagName("lastName").item(0).getTextContent(),
+                            employee.getElementsByTagName("country").item(0).getTextContent(),
+                            Integer.parseInt(employee.getElementsByTagName("age").item(0).getTextContent()));
+                    result.add(empl);
                 }
             }
         } catch (Exception e) {
@@ -73,8 +96,7 @@ public class Main {
 
 
     private static String listToJson(List<Employee> list) {
-        Type listType = new TypeToken<List<Employee>>() {
-        }.getType();
+        Type listType = new TypeToken<List<Employee>>() {}.getType();
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(list, listType);
     }
